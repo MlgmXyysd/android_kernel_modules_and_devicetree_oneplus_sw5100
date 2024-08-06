@@ -1,0 +1,507 @@
+//From: qcom/monaco-standalone.dts
+#include "../qcom/monaco.dtsi"
+#include "tp/oplus-tp-focaltech.dtsi"
+
+/ {
+	aliases {
+		sdhc2 = &sdhc_3; /*SDCARD slot*/
+	};
+};
+
+&soc {
+	/delete-node/ gpio_keys;
+	gpio_keys: gpio_keys {
+		compatible = "gpio-keys";
+		label = "gpio-keys";
+
+		wakeup: wakeup{
+			label = "wakeup";
+			gpios = <&tlmm 86 GPIO_ACTIVE_HIGH>;
+			linux,input-type = <1>;
+			linux,code = <KEY_WAKEUP>;
+			gpio-key,wakeup;
+			debounce-interval = <1>;
+			linux,can-disable;
+		};
+		voicewakeup: voicewakeup{
+			label = "voicewakeup";
+			gpios = <&tlmm 19 GPIO_ACTIVE_HIGH>;
+			linux,input-type = <1>;
+			linux,code = <KEY_F5>;
+			gpio-key,wakeup;
+			debounce-interval = <1>;
+			linux,can-disable;
+		};
+	};
+
+	mic_power: gpio-regulator@18 {
+		compatible = "regulator-fixed";
+		regulator-name = "mic_power";
+		gpio = <&tlmm 18 0>;
+		enable-active-high;
+	};
+	
+	oplus_switch: oplus_switch {
+		compatible = "oplus,switch";
+		label = "gpio-switch";
+		gpios = <&tlmm 42 0x0>, /*switch_id 0 ui*/
+			<&tlmm 80 0x0>; /*switch_id 1 Motor*/
+			//<&tlmm 19 0x0>, /*switch_id 2 NFC*/
+			//<&tlmm 62 0x0>; /*switch_id 3 Au*/
+		switch_lcd {
+			label = "lcd";
+			index = <0>;
+		};
+		switch_tp {
+			label = "tp";
+			index = <0>;
+		};
+		switch_mt {
+			label = "mt";
+			index = <1>;
+		};
+	};
+
+	sdhc_3: sdhci@4784000 {
+		compatible = "qcom,sdhci-msm-v5";
+		reg = <0x04784000 0x1000>;
+		reg-names = "hc_mem";
+
+		interrupts = <GIC_SPI 350 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 353 IRQ_TYPE_LEVEL_HIGH>;
+		interrupt-names = "hc_irq", "pwr_irq";
+
+		clocks = <&gcc GCC_SDCC2_APPS_CLK>, <&gcc GCC_SDCC2_AHB_CLK>;
+		clock-names = "core", "iface";
+
+		interconnects = <&system_noc MASTER_SDCC_2 &bimc SLAVE_EBI_CH0>,
+			<&bimc MASTER_AMPSS_M0 &config_noc SLAVE_SDCC_2>;
+		interconnect-names = "sdhc-ddr","cpu-sdhc";
+		qcom,msm-bus,name = "sdhc3";
+		qcom,msm-bus,num-cases = <8>;
+		qcom,msm-bus,num-paths = <2>;
+		qcom,msm-bus,vectors-KBps =
+			/* No Vote */
+			<0 0>, <0 0>,
+			/* 400 KB/s*/
+			<1046 3200>, <1600 1600>,
+			/* 25 MB/s */
+			<65360 250000>, <100000 133320>,
+			/* 50 MB/s */
+			<130718 250000>, <133320 133320>,
+			/* 100 MB/s */
+			<261438 250000>, <150000 133320>,
+			/* 200 MB/s */
+			<261438 800000>, <300000 300000>,
+			/* Max. bandwidth */
+			<1338562 4096000>, <1338562 4096000>;
+		qcom,bus-bw-vectors-bps = <0 400000 25000000 50000000
+			100000000 200000000 4294967295>;
+		qcom,restore-after-cx-collapse;
+		/* DLL HSR settings. Refer go/hsr - <Target> DLL settings */
+		qcom,dll-hsr-list = <0x000F642C 0x0 0x01 0x2c010800 0x80040868>;
+
+		bus-width = <4>;
+
+		iommus = <&apps_smmu 0xA0 0x0>;
+		qcom,iommu-dma = "bypass";
+
+		qcom,devfreq,freq-table = <400000 20000000 25000000 50000000 100000000>;
+
+		status = "disabled";
+
+		qos0 {
+			mask = <0x0f>;
+			vote = <43>;
+		};
+	};
+
+	bcmdhd_wlan_0: bcmdhd_wlan@0 {
+		compatible = "android,bcmdhd_wlan";
+		interrupt-parent = <&tlmm>;
+		interrupts = <111 0x2008>;
+		interrupt-names = "wlan_wake";
+		gpio_wl_reg_on = <&tlmm 34 0>;
+		gpio_wl_host_wake = <&tlmm 111 0>;
+		nvram = "nvram.txt";
+		firmware = "fw_bcmdhd.bin";
+		/*wlreg_on-supply = <&wlreg_on>;*/
+		status = "ok";
+	};
+
+	osh: oplus,sensor-hub {
+		status = "okay";
+		compatible = "oplus,sensor-hub";
+
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		//ap-suspend-gpio = <&tlmm 22 0>;
+		ap-state-gpio = <&tlmm 22 0>;
+		dead-gpio = <&tlmm 109 GPIO_ACTIVE_LOW>;
+	};
+
+	bluesleep: bluesleep {
+		status = "disabled";
+		compatible = "bcm,bluesleep";
+		bt_host_wake = <&tlmm 87 0x00>; /* BT_DEV_WAKE */
+		bt_ext_wake = <&tlmm 103 0x00>; /* BT_HOST_WAKE */
+		interrupt-parent = <&tlmm>;
+		interrupts = <19 0>;
+		interrupt-names = "host_wake";
+		pinctrl-names = "wake_irq_active", "wake_irq_suspend";
+		pinctrl-0 = <&msm_gpio_103_active &msm_gpio_87>;
+		pinctrl-1 = <&msm_gpio_103_suspend &msm_gpio_87>;
+	};
+};
+
+&sdhc_3 {
+		/* device core power supply for sd card*/
+		// vdd-supply = <&L25A>;
+		// qcom,vdd-voltage-level = <2900000 3200000>;
+		// qcom,vdd-current-level = <200 570000>;
+
+		/* device communication power supply for msm_io*/
+		vdd-io-supply = <&L17A>;
+		//qcom,vdd-io-voltage-level = <1800000 2950000>;
+		qcom,vdd-io-voltage-level = <1800000 1800000>;
+		qcom,vdd-io-current-level = <200 22000>;
+
+		qcom,wifi-control-func;
+		keep-power-in-suspend;
+		enable-sdio-wakeup;
+		non-removable;
+		//qcom,core_3_0v_support;
+
+		pinctrl-names = "default", "sleep";
+		pinctrl-0 = <&sdc3_clk_on &sdc3_cmd_on &sdc3_data_on>;
+		pinctrl-1 = <&sdc3_clk_off &sdc3_cmd_off &sdc3_data_off>;
+
+		//cd-gpios = <&tlmm 106 0x0>;
+
+		qcom,devfreq,freq-table = <400000 20000000 25000000 50000000 100000000>;
+		max-frequency = <25000000>;
+		//qcom,bus-speed-mode = "SDR12", "SDR25", "SDR50", "DDR50", "SDR104";
+
+		status = "ok";
+};
+
+&tlmm {
+	nfc {
+		nfc_int_active: nfc_int_active {
+			/* active state */
+			mux {
+				/* GPIO 7: NFC Read Interrupt */
+				pins = "gpio7";
+				function = "gpio";
+			};
+
+			config {
+				pins = "gpio7";
+				drive-strength = <2>; /* 2 MA */
+				bias-pull-down;
+			};
+		};
+
+		nfc_int_suspend: nfc_int_suspend {
+			/* sleep state */
+			mux {
+				/* GPIO 7: NFC Read Interrupt */
+				pins = "gpio7";
+				function = "gpio";
+			};
+
+			config {
+				pins = "gpio7";
+				drive-strength = <2>; /* 2 MA */
+				bias-pull-down;
+			};
+		};
+
+		nfc_enable_active: nfc_enable_active {
+			mux {
+				/* 6: Enable,8: Firmware */
+				pins = "gpio6", "gpio8";
+				function = "gpio";
+			};
+
+			config {
+				pins = "gpio6", "gpio8";
+				drive-strength = <2>; /* 2 MA */
+				bias-disable;
+			};
+		};
+
+		nfc_enable_suspend: nfc_enable_suspend {
+			mux {
+				/* 6: Enable,8: Firmware */
+				pins = "gpio6", "gpio8";
+				function = "gpio";
+			};
+
+			config {
+				pins = "gpio6", "gpio8";
+				drive-strength = <2>; /* 2 MA */
+				bias-disable;
+			};
+		};
+	};
+
+	pmx_sdc3_clk {
+		sdc3_clk_on: sdc3_clk_on {
+			mux {
+				pins = "gpio79";
+				function = "sdc3_clk";
+			};
+			config {
+				pins = "gpio79";
+				drive-strength = <8>; /* 8 MA */
+				bias-disable; /* NO pull */
+			};
+		};
+
+		sdc3_clk_off: sdc3_clk_off {
+			mux {
+				pins = "gpio79";
+				function = "sdc3_clk";
+			};
+			config {
+				pins = "gpio79";
+				bias-disable; /* NO pull */
+				drive-strength = <2>; /* 2 MA */
+			};
+		};
+	};
+
+	pmx_sdc3_cmd {
+		sdc3_cmd_on: sdc3_cmd_on {
+			mux {
+				pins = "gpio78";
+				function = "sdc3_cmd";
+			};
+			config {
+				pins = "gpio78";
+				bias-pull-up; /* pull up */
+				drive-strength = <8>; /* 8 MA */
+			};
+		};
+
+		sdc3_cmd_off: sdc3_cmd_off {
+			mux {
+				pins = "gpio78";
+				function = "sdc3_cmd";
+			};
+			config {
+				pins = "gpio78";
+				bias-pull-up; /* pull up */
+				drive-strength = <2>; /* 2 MA */
+			};
+		};
+	};
+
+	pmx_sdc3_data {
+		sdc3_data_on: sdc3_data_on {
+			mux {
+				pins = "gpio74","gpio75","gpio76","gpio77";
+				function = "sdc3_data";
+			};
+			config {
+				pins = "gpio74","gpio75","gpio76","gpio77";
+				bias-pull-up; /* pull up */
+				drive-strength = <8>; /* 8 MA */
+			};
+		};
+
+		sdc3_data_off: sdc3_data_off {
+			mux {
+				pins = "gpio74","gpio75","gpio76","gpio77";
+				function = "sdc3_data";
+			};
+			config {
+				pins = "gpio74","gpio75","gpio76","gpio77";
+				bias-pull-up; /* pull up */
+				drive-strength = <2>; /* 2 MA */
+			};
+		 };
+	};
+
+	swd_dap-gpiomem {
+		compatible = "oplus,swd_dap-gpiomem";
+		reg = <0x055D000 0x2000>;
+		status = "okay";
+	};
+
+	bt {
+		bt_host_wakeup_active {
+			msm_gpio_103_active: msm_gpio_103_active {
+				mux {
+					pins = "gpio103";
+					function = "gpio";
+				};
+
+				config {
+					pins = "gpio103";
+					drive-strength = <2>;
+					bias-pull-down;
+				};
+			};
+		};
+		bt_host_wakeup_suspend {
+			msm_gpio_103_suspend: msm_gpio_103_suspend {
+				mux {
+					pins = "gpio103";
+					function = "gpio";
+				};
+
+				config {
+					pins = "gpio103";
+					drive-strength = <2>;
+					bias-pull-down;
+				};
+			};
+		};
+		bt_dev_wakeup {
+			msm_gpio_87: msm_gpio_87 {
+				mux {
+					pins = "gpio87";
+					function = "gpio";
+				};
+
+				config {
+					pins = "gpio87";
+					drive-strength = <2>;
+					bias-disable;
+					output-low;
+				};
+			};
+		};
+	};
+};
+
+&pm5100_gpios {
+	nfc_clk {
+		nfc_clk_default: nfc_clk_default {
+			pins = "gpio4";
+			function = "normal";
+			input-enable;
+			power-source = <0>;
+		};
+	};
+};
+
+&qupv3_se0_i2c { /* QUP SE0 (NFC) */
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	status = "ok";
+	qcom,clk-freq-out = <400000>;
+	oplus_nfc:nq@28 {
+		compatible = "nxp,pn544";
+		reg = <0x28>;
+		nxp,pn544-irq = <&tlmm 7 0x00>;
+		nxp,pn544-ven = <&tlmm 6 0x00>;
+		nxp,pn544-fw-dwnld = <&tlmm 8 0x00>;
+		nxp,pn544-clkreq = <&pm5100_gpios 4 0x00>;
+		interrupt-parent = <&tlmm>;
+		qcom,clk-src = "LNBBCLK3";
+		interrupts = <7 0>;
+		interrupt-names = "nfc_irq";
+		pinctrl-names = "nfc_active", "nfc_suspend";
+		pinctrl-0 = <&nfc_int_active &nfc_enable_active>;
+		pinctrl-1 = <&nfc_int_suspend &nfc_enable_suspend>;
+		clocks = <&rpmcc RPM_SMD_LN_BB_CLK3_PIN>;
+		clock-names = "ref_clk";
+	};
+};
+
+/* HS UART Instance */
+&qupv3_se5_4uart{
+	interrupts-extended = <&intc GIC_SPI 332 IRQ_TYPE_LEVEL_HIGH>;//,<&tlmm 29 IRQ_TYPE_LEVEL_HIGH>;
+};
+
+
+/**/
+&spmi_bus {
+	qcom,pm5100@0 {
+		pon_hlos: pon_hlos@1300 {
+			reg = <0x1300>, <0x800>;
+			reg-names = "pon_hlos", "pon_pbs";
+			qcom,pon-dbc-delay = <15625>;
+			qcom,kpdpwr-sw-debounce;
+			//qcom,pon-dbc-delay = <2000>;
+			/delete-node/ qcom,pon_2;
+			qcom,pon_1 {
+				linux,code = <KEY_F1>;
+			};
+		};
+	};
+};
+
+&wdog {
+	qcom,bark-time = <15000>;
+	qcom,pet-time = <10000>;
+};
+
+&intc {
+	#gpio-cells = <0>;
+};
+
+&qupv3_se1_i2c_active {
+	/delete-node/ config;
+	config {
+		pins = "gpio10", "gpio11";
+		drive-strength = <2>;
+		bias-disable;
+	};
+};
+
+&qupv3_se5_default_tx {
+	/delete-node/ config;
+	config {
+		pins = "gpio28";
+		drive-strength = <2>;
+		bias-disable;
+	};
+};
+
+&L7A {
+	regulator-min-microvolt = <650000>;
+	regulator-max-microvolt = <650000>;
+	qcom,init-voltage = <650000>;
+};
+
+&L10A {
+	regulator-min-microvolt = <1170000>;
+	regulator-max-microvolt = <1170000>;
+	qcom,init-voltage = <1170000>;
+};
+
+&L18A {
+	regulator-min-microvolt = <1950000>;
+	regulator-max-microvolt = <1950000>;
+	qcom,init-voltage = <1950000>;
+};
+
+&qupv3_se1_i2c {
+	qcom,rtl_se;
+	/delete-node/ tsc@24;
+};
+
+&slim_aud {
+	status = "disabled";
+};
+
+&usb2_phy0 { //disable eud
+	//reg = <0x1613000 0x120>, <0x01612000 0x4>;
+	reg = <0x1613000 0x120>;
+	reg-names = "hsusb_phy_base";
+};
+
+&usb0 { //disable eud
+	//extcon = <&pm5100_charger>, <&eud>;
+	extcon = <&pm5100_charger>;
+};
+
+&eud { //disable eud
+	status = "disable";
+};

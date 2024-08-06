@@ -1,0 +1,12 @@
+/dts-v1/;
+
+#include "sa415m-ttp.dtsi"
+#include "sa415m-v2.dtsi"
+
+/ {
+	model = "Qualcomm Technologies, Inc. SA415M TTP USB-EP";
+	compatible = "qcom,sa415m-ccard",
+			"qcom,sa415m", "qcom,ccard";
+	qcom,board-id = <30 0x102>;
+};
+

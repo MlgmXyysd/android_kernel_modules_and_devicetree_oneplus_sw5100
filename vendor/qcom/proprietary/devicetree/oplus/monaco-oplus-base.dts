@@ -1,0 +1,12 @@
+//From: qcom/monaco-1gb.dts
+/dts-v1/;
+
+#include "monaco-oplus-base.dtsi"
+
+/ {
+	model = "Qualcomm Technologies, Inc. Monaco Watch";
+	compatible = "qcom,monaco";
+	qcom,board-id = <0x010022 0x1>;
+	oplus,project-id = <20900>;
+	oplus,hw-id = <0x00 0x00000000 0xffffffff>;
+};

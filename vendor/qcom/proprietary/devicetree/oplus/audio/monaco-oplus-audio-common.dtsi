@@ -1,0 +1,119 @@
+//From:
+
+#include <dt-bindings/gpio/gpio.h>
+
+&spf_core_platform {
+    cdc_lpi_i2s2_gpios: lpi_i2s2_pinctrl {
+        status= "ok";
+        compatible = "qcom,msm-cdc-pinctrl";
+        pinctrl-names = "aud_active", "aud_sleep";
+        pinctrl-0 = <&lpi_i2s2_sck_active &lpi_i2s2_ws_active
+                &lpi_i2s2_sd0_active &lpi_i2s2_sd1_active>;
+        pinctrl-1 = <&lpi_i2s2_sck_sleep &lpi_i2s2_ws_sleep
+                &lpi_i2s2_sd0_sleep &lpi_i2s2_sd1_sleep>;
+        #gpio-cells = <0>;
+        qcom,lpi-gpios;
+    };
+};
+
+&cdc_dmic01_gpios {
+    #gpio-cells = <0>;
+};
+
+&cdc_dmic23_gpios {
+    #gpio-cells = <0>;
+};
+
+&rx_swr_gpios {
+    #gpio-cells = <0>;
+};
+
+&va_swr_gpios {
+    #gpio-cells = <0>;
+};
+
+&cc_pri_mi2s_gpios {
+    #gpio-cells = <0>;
+};
+
+&cc_quat_mi2s_gpios {
+    #gpio-cells = <0>;
+};
+
+&swr1 {
+    qcom,swr-port-mapping = <1 HPH_L 0x1>,
+                    <1 HPH_R 0x2>, <2 CLSH 0x1>,
+                    <3 COMP_L 0x1>, <3 COMP_R 0x2>,
+                    <4 LO 0x1>, <5 DSD_L 0x1>,
+                    <5 DSD_R 0x2>,
+                    <7 SWRM_RX_PCM_IN 0x3>;
+};
+
+&swr0 {
+    status = "disabled";
+};
+
+&besbev_codec {
+        qcom,swr_ch_map = <0 SPKR_L 0x1 0 LO>,
+                <2 ADC1 0x1 0 SWRM_RX_PCM_IN>, <2 ADC2 0x2 0 SWRM_RX_PCM_IN>;
+
+};
+
+&monaco_snd {
+    qcom,wcn-btfm = <0>;
+    qcom,audio-routing =
+            "TX DMIC0", "Digital Mic0",
+            "Digital Mic0", "MIC BIAS1",
+            "TX DMIC1", "Digital Mic1",
+            "Digital Mic1", "MIC BIAS1",
+            "TX DMIC2", "Digital Mic2",
+            "Digital Mic2", "MIC BIAS2",
+            "TX DMIC3", "Digital Mic3",
+            "Digital Mic3", "MIC BIAS2",
+            "SPKR_IN", "AUX_OUT",
+            "TX SWR_INPUT", "VA_TX_SWR_CLK",
+            "RX_TX DEC0_INP", "TX DEC0 MUX",
+            "RX_TX DEC1_INP", "TX DEC1 MUX",
+            "RX_TX DEC2_INP", "TX DEC2 MUX",
+            "RX_TX DEC3_INP", "TX DEC3 MUX",
+            "TX_AIF1 CAP", "VA_TX_SWR_CLK",
+            "TX_AIF2 CAP", "VA_TX_SWR_CLK",
+            "TX_AIF3 CAP", "VA_TX_SWR_CLK",
+            "VA SWR_INPUT", "VA_SWR_CLK",
+            "VA_AIF1 CAP", "VA_SWR_CLK",
+            "VA_AIF2 CAP", "VA_SWR_CLK",
+            "VA_AIF3 CAP", "VA_SWR_CLK",
+            "VA DMIC0", "Digital Mic0",
+            "VA DMIC1", "Digital Mic1",
+            "VA DMIC2", "Digital Mic2",
+            "VA DMIC3", "Digital Mic3",
+            "VA DMIC0", "VA MIC BIAS1",
+            "VA DMIC1", "VA MIC BIAS1",
+            "VA DMIC2", "VA MIC BIAS2",
+            "VA DMIC3", "VA MIC BIAS2",
+            "AMIC1", "Analog Mic1",
+            "Analog Mic1","MIC BIAS1",
+            "AMIC2", "Analog Mic2",
+            "Analog Mic2", "MIC BIAS2",
+            "SPKR_IN", "AUX_OUT",
+            "TX SWR_INPUT", "VA_TX_SWR_CLK",
+            "RX_SWR_TX_PCM_IN0", "RX_MCLK",
+            "RX_SWR_TX_PCM_IN1", "RX_MCLK",
+            "RX_SWR_TX_PCM_IN0", "ADC1_OUTPUT",
+            "RX_SWR_TX_PCM_IN1", "ADC2_OUTPUT",
+            "RX_TX DEC0_INP", "TX DEC0 MUX",
+            "RX_TX DEC1_INP", "TX DEC1 MUX",
+            "RX_TX DEC2_INP", "TX DEC2 MUX",
+            "RX_TX DEC3_INP", "TX DEC3 MUX",
+            "TX_AIF1 CAP", "VA_TX_SWR_CLK",
+            "TX_AIF2 CAP", "VA_TX_SWR_CLK",
+            "TX_AIF3 CAP", "VA_TX_SWR_CLK",
+            "VA SWR_INPUT", "VA_SWR_CLK",
+            "VA_AIF1 CAP", "VA_SWR_CLK",
+            "VA_AIF2 CAP", "VA_SWR_CLK",
+            "VA_AIF3 CAP", "VA_SWR_CLK";
+
+    qcom,mi2s-audio-intf = <1>;
+    qcom,sec-mi2s-gpios = <&cdc_lpi_i2s2_gpios>;
+};
+

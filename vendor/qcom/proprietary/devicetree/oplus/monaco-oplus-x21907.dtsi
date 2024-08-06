@@ -1,0 +1,11 @@
+//From: qcom/monaco-standalone-idp-v1.dtsi
+
+#include "monaco-oplus-common21x.dtsi"
+#include "monaco-oplus-commonx907.dtsi"
+#include "audio/monaco-oplus-audio-x21907.dtsi"
+#include "haptic/aw86927.dtsi"
+#include "battery/qbg-battery-base.dtsi"
+
+&bcmdhd_wlan_0 {
+    nvram = "nvram_21907.txt";
+};

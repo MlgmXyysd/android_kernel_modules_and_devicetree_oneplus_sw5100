@@ -1,0 +1,13 @@
+&soc {
+	/delete-node/ qcom,battery-data;
+	monaco_batterydata: qcom,battery-data {
+		qcom,batt-id-range-pct = <15>;
+		#include "qbg-battery-profile-570mah.dtsi"
+		#include "fg-gen3-batterydata-brich-opowx64-500mah.dtsi"
+	};
+};
+
+&soc {
+	qcom,battery-data = <&monaco_batterydata>;
+	qcom,hold-soc-while-full;
+};

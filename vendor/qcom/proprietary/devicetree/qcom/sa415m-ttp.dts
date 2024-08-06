@@ -1,0 +1,30 @@
+/dts-v1/;
+
+#include "sa415m-ttp.dtsi"
+#include "sa415m-v2.dtsi"
+
+/ {
+	model = "Qualcomm Technologies, Inc. SA415M TTP V2";
+	compatible = "qcom,sa415m-ccard",
+			"qcom,sa415m", "qcom,ccard";
+	qcom,board-id = <30 0x100>;
+
+	qcom_gadget {
+		compatible = "qcom,usb-gadget";
+		qcom,vid = <0x05c6>;
+
+		composition1 {
+			qcom,pid = <0x90dc>;
+			qcom,composition = "diag.diag,cser.dun.0,gsi.rmnet,gsi.dpl,qdss.qdss";
+		};
+
+		composition2 {
+			qcom,pid = <0x90b7>;
+			qcom,composition = "diag.diag,cser.dun.0,gsi.rmnet,gsi.dpl";
+		};
+	};
+};
+
+&blsp1_uart2b_hs {
+	status = "okay";
+};

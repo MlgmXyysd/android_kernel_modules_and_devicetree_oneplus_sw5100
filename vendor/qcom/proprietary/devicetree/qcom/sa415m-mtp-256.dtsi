@@ -1,0 +1,2 @@
+#include "sa415m-mtp.dtsi"
+#include "sa415m-memory-256.dtsi"

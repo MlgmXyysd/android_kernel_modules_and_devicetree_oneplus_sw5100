@@ -1,0 +1,161 @@
+//From:
+
+#include "../qcom/monaco-standalone-idp-v1.dtsi"
+#include "audio/monaco-oplus-lpi-overlay.dtsi"
+#include "audio/monaco-oplus-audio-common.dtsi"
+
+&qupv3_se2_spi {
+	status = "ok";
+
+	p61@0 {
+		compatible = "nxp,p61";
+		reg = <0>;
+		spi-max-frequency = <20000000>;
+	};
+};
+
+&qupv3_se3_spi { /*dual communication*/
+	status = "okay";
+	qcom,rt;
+	qcom,slv-ctrl;
+	//slv-cross-connected;
+	//qcom,disable-autosuspend;
+	qcom,use-fixed-timeout;
+
+	slave@0 {
+		compatible = "oplus,dual_comm_slave";
+		reg = <0>;
+		spi-max-frequency = <48000000>;
+		spi_bits_per_word = <8>;
+		m2s_int_gpio = <&tlmm 25 0x0>;
+		s2m_ans_gpio = <&tlmm 24 0x0>;
+		s2m_int_gpio = <&tlmm 9 0x0>;
+		m2s_ans_gpio = <&tlmm 85 0x0>;
+		mcu_dead_gpio = <&tlmm 109 0x0>;
+	};
+};
+
+&bluesleep {
+	status = "ok";
+};
+
+&osh {
+	reset-gpio = <&tlmm 53 GPIO_ACTIVE_HIGH>;
+	power-gpio = <&tlmm 32 GPIO_ACTIVE_LOW>;
+	buck-enable-gpio = <&tlmm 61 GPIO_ACTIVE_HIGH>;
+
+	pinctrl-names = "default";
+	pinctrl-0 = <&sensor_hub_reset_default &sensor_hub_power_default &sensor_hub_buck_enable_default>;
+
+	oplus,swd {
+		compatible = "oplus,swd";
+		reg = <1>;
+
+		pinctrl-names = "default", "active", "dap_active";
+		pinctrl-0 = <&swd_clk_default &swd_data_default>;
+		pinctrl-1 = <&swd_bus_active>;
+		pinctrl-2 = <&swd_dap_active>;
+		swd_clk-gpio = <&tlmm 93 0x0>;
+		swd_data-gpio = <&tlmm 94 0x0>;
+	};
+};
+
+&tlmm {
+	sensor_hub_reset_default: sensor_hub_reset_default {
+		mux {
+			pins = "gpio53";
+			function = "gpio";
+		};
+		config {
+			pins = "gpio53";
+			output-low;
+			bias-disable;
+			drive-strength = <2>; /* 2 MA */
+		};
+	};
+
+	sensor_hub_power_default: sensor_hub_power_default {
+		mux {
+			pins = "gpio32";
+			function = "gpio";
+		};
+		config {
+			pins = "gpio32";
+			output-high;
+			bias-pull-down;
+			drive-strength = <8>; /* 8 MA */
+		};
+	};
+
+	sensor_hub_buck_enable_default: sensor_hub_buck_enable_default {
+		mux {
+			pins = "gpio33";
+			function = "gpio";
+		};
+		config {
+			pins = "gpio33";
+			output-low;
+			bias-pull-down;
+			drive-strength = <8>; /* 8 MA */
+		};
+	};
+
+	swd_bus_default {
+		/* SWCLK, SWDIO to High-Z mode */
+		swd_clk_default: swd_clk_default {
+			mux {
+				pins = "gpio93";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio93";
+				input-enable;
+				bias-disable;
+			};
+		};
+
+		swd_data_default: swd_data_default {
+			mux {
+				pins = "gpio94";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio94";
+				input-enable;
+				bias-disable;/*bias-pull-up;*/
+			};
+		};
+	};
+
+	swd_bus_active: swd_bus_active {
+		/* SWCLK, SWDIO to output mode and set to default low level */
+		mux {
+			pins = "gpio93", "gpio94";
+			function = "gpio";
+		};
+		config {
+			pins = "gpio93", "gpio94";
+			output-low;
+			bias-pull-down;
+			drive-strength = <2>; /* 2 MA */
+		};
+	};
+
+	swd_dap_active: swd_dap_active {
+		/* SWCLK, SWDIO to output mode and set to default high level */
+		mux {
+			pins = "gpio93", "gpio94";
+			function = "gpio";
+		};
+		config {
+			pins = "gpio93", "gpio94";
+			output-high;
+			bias-pull-up;
+			drive-strength = <2>; /* 2 MA */
+		};
+	};
+};
+
+&bcmdhd_wlan_0 {
+	oplus,2g_only;
+};

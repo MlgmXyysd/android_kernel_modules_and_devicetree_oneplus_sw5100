@@ -1,0 +1,97 @@
+//From: qcom/monaco-standalone-idp-v1.dtsi
+
+
+&pm5100_qbg {
+	qcom,iterm-ma = <35>;
+};
+
+&soc {
+	//vdd_pixart: gpio-regulator@33 {
+	//	compatible = "regulator-fixed";
+	//	regulator-name = "vdd_pixart";
+	//	gpio = <&tlmm 37 0>;
+	//	enable-active-high;
+	//};
+
+	vld_pixart: gpio-regulator@63 {
+		compatible = "regulator-fixed";
+		regulator-name = "vld_pixart";
+		gpio = <&tlmm 63 0>;
+		enable-active-high;
+	};
+};
+
+&qupv3_se1_i2c {
+	status = "ok";
+
+	qcom,clk-freq-out = <400000>;
+	//qcom,noise-rjct-scl = <3>;
+	//qcom,noise-rjct-sda = <3>;
+	//qcom,high-time-clk-div = <48>; //21*2 400K 12 + 30 ...
+	//qcom,fs-clk-div = <120>; //168 100K
+
+	pixart_pat9125@79 {
+		compatible = "pixart,pat9125";
+		status = "okay";
+		reg = <0x79>;
+		interrupt-parent = <&tlmm>;
+		interrupts = <107 0>;
+		//vdd-supply = <&vdd_pixart>;
+		vld-supply = <&vld_pixart>;
+		irq-gpio = <&tlmm 107 0>;
+		pixart,irq-gpio = <&tlmm 107 0>;
+		pinctrl-names = "pmx_rot_switch_active",
+				"pmx_rot_switch_suspend",
+				"pmx_rot_switch_release";
+		pinctrl-0 = <&pix_int_active>;
+		pinctrl-1 = <&pix_int_suspend>;
+		pinctrl-2 = <&pix_release>;
+		//pixart,inverse-x;
+		//pixart,press-enabled = <0>;
+		//pixart,press-keycode = <KEY_WAKEUP>;
+	};
+};
+
+
+&tlmm {
+	pix_int_active: pix_int_active {
+		mux {
+			pins = "gpio107";
+			function = "gpio";
+		};
+		config {
+			pins = "gpio107";
+			input-enable;
+			bias-pull-up;
+			drive-strength = <2>; /* 2 MA */
+		};
+	};
+
+	pix_int_suspend: pix_int_suspend {
+		mux {
+			pins = "gpio107";
+			function = "gpio";
+		};
+		config {
+			pins = "gpio107";
+			input-enable;
+			bias-pull-up;
+			drive-strength = <2>; /* 2 MA */
+		};
+	};
+
+	pix_release: pix_release {
+		mux {
+			pins = "gpio107";
+			function = "gpio";
+		};
+
+		config {
+			pins = "gpio107";
+			input-enable;
+			drive-strength = <2>;
+			bias-pull-down;
+		};
+	};
+
+};

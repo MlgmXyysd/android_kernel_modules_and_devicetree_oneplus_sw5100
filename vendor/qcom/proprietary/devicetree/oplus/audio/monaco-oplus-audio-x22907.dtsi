@@ -1,0 +1,56 @@
+//From:
+
+#include <dt-bindings/gpio/gpio.h>
+
+&spf_core_platform {
+    cdc_lpi_i2s3_gpios: lpi_i2s3_pinctrl {
+        status= "ok";
+        compatible = "qcom,msm-cdc-pinctrl";
+        pinctrl-names = "aud_active", "aud_sleep";
+        pinctrl-0 = <&lpi_i2s3_sck_active &lpi_i2s3_ws_active
+                &lpi_i2s3_sd0_active &lpi_i2s3_sd1_active>;
+        pinctrl-1 = <&lpi_i2s3_sck_sleep &lpi_i2s3_ws_sleep
+                &lpi_i2s3_sd0_sleep &lpi_i2s3_sd1_sleep>;
+        #gpio-cells = <0>;
+        qcom,lpi-gpios;
+    };
+};
+
+&monaco_snd {
+    qcom,wcn-btfm = <0>;
+    qcom,pri-mi2s-gpios = <&cc_pri_mi2s_gpios>;
+};
+
+&qupv3_se4_i2c {
+    status = "ok";
+
+    tfa98xx@34 {
+        status = "ok";
+        compatible = "nxp,tfa98xx";
+        reg = <0x34>;
+        tfa_min_range = <5000>;
+        tfa_max_range = <7800>;
+        reset-gpio = <&tlmm 41 0x00>;
+        sel-gpio  = <&tlmm 62 GPIO_ACTIVE_HIGH>;
+        //tfa_channel = <1>;
+	cnt-name = "tfa98xx.22907.cnt";
+    };
+};
+
+&soc {
+	oplus_audio_drv: oplus,audio-drv {
+		compatible = "oplus,asoc-audio";
+		//for nxp speaker
+		oplus,speaker-vendor = "nxp";
+		oplus,speaker-i2s-id = <0>;
+		oplus,speaker-codec-name = "tfa98xx.2-0034";
+		oplus,speaker-codec-dai-name = "tfa98xx-aif-2-34";
+        //for audio switch
+        oplus,switch-lock-gpio = <&tlmm 61 0x00>;
+	};
+};
+
+&tx_macro {
+    power-gpio = <&tlmm 18 GPIO_ACTIVE_HIGH>;
+    sel-gpio  = <&tlmm 108 GPIO_ACTIVE_HIGH>;
+};

@@ -1,0 +1,140 @@
+&mdss_mdp {
+	dsi_visionox_nt37350_amoled_174_cmd: qcom,mdss_dsi_nt37350_amoled_174_cmd {
+		qcom,mdss-dsi-panel-name =
+			"Visionox NT37350 1.74 amoled cmd mode";
+		qcom,mdss-dsi-panel-type = "dsi_cmd_mode";
+		qcom,mdss-dsi-panel-physical-type = "oled";
+		qcom,mdss-dsi-virtual-channel-id = <0>;
+		qcom,mdss-dsi-stream = <0>;
+		qcom,mdss-dsi-bpp = <24>;
+		qcom,mdss-dsi-color-order = "rgb_swap_rgb";
+		qcom,mdss-dsi-underflow-color = <0xff>;
+		qcom,mdss-dsi-border-color = <0>;
+
+		qcom,dsi-ctrl-num = <0>;
+		qcom,dsi-phy-num = <0>;
+
+		qcom,mdss-dsi-traffic-mode = "burst_mode";
+		qcom,mdss-dsi-lane-map = "lane_map_0123";
+		qcom,mdss-dsi-bllp-eof-power-mode;
+		qcom,mdss-dsi-bllp-power-mode;
+		qcom,mdss-dsi-lane-0-state;
+		qcom,mdss-dsi-dma-trigger = "trigger_sw";
+		qcom,mdss-dsi-mdp-trigger = "none";
+		qcom,mdss-dsi-reset-sequence = <0 15>, <1 15>;
+		qcom,mdss-dsi-te-pin-select = <1>;
+		qcom,mdss-dsi-te-dcs-command = <1>;
+		qcom,mdss-dsi-te-check-enable;
+		qcom,mdss-dsi-te-using-te-pin;
+		qcom,mdss-dsi-t-clk-post = <0x08>;
+		qcom,mdss-dsi-t-clk-pre = <0x0B>;
+
+		qcom,mdss-dsi-bl-pmic-control-type = "bl_ctrl_dcs";
+		qcom,mdss-dsi-bl-min-level = <1>;
+		qcom,mdss-dsi-bl-max-level = <256>;
+		qcom,mdss-brightness-max-level = <256>;
+
+		qcom,mdss-dsi-display-timings {
+			timing@0 {
+				qcom,mdss-dsi-panel-framerate = <60>;
+				qcom,mdss-dsi-panel-width = <372>;
+				qcom,mdss-dsi-panel-height = <430>;
+				qcom,mdss-dsi-h-front-porch = <40>;
+				qcom,mdss-dsi-h-back-porch = <20>;
+				qcom,mdss-dsi-h-pulse-width = <2>;
+				qcom,mdss-dsi-h-sync-skew = <0>;
+				qcom,mdss-dsi-v-back-porch = <12>;
+				qcom,mdss-dsi-v-front-porch = <16>;
+				qcom,mdss-dsi-v-pulse-width = <2>;
+				qcom,mdss-dsi-h-left-border = <0>;
+				qcom,mdss-dsi-h-right-border = <0>;
+				qcom,mdss-dsi-v-top-border = <0>;
+				qcom,mdss-dsi-v-bottom-border = <0>;
+
+				qcom,mdss-dsi-on-command = [
+					15 01 00 00 00 00 02 FF 25   /*HBM splash*/
+					15 01 00 00 00 00 02 FB 01
+					15 01 00 00 00 00 02 72 54
+					15 01 00 00 00 00 02 78 54   /*HBM splash end*/
+					15 01 00 00 00 00 02 FF 10
+					15 01 00 00 00 00 02 FB 01
+					15 01 00 00 00 00 02 53 20
+					15 01 00 00 00 00 02 E5 31
+					15 01 00 00 00 00 02 FF 10
+					05 01 00 00 40 00 01 11
+					05 01 00 00 00 00 01 29
+				];
+
+				qcom,mdss-dsi-off-command = [
+					15 01 00 00 00 00 02 FF 10
+					15 01 00 00 00 00 02 FB 01
+					05 01 00 00 14 00 02 28 00
+					05 01 00 00 78 00 02 10 00];
+				qcom,mdss-dsi-on-command-state = "dsi_lp_mode";
+				qcom,mdss-dsi-off-command-state = "dsi_hs_mode";
+
+				qcom,mdss-dsi-lp1-command = [
+					15 01 00 00 00 00 02 FF 10
+					15 01 00 00 00 00 02 FB 01
+					15 01 00 00 00 00 02 51 80
+					15 01 00 00 00 00 02 39 00  /*Idle Mode on*/
+				];
+				qcom,mdss-dsi-nolp-command = [
+					15 01 00 00 00 00 02 FF 10
+					15 01 00 00 00 00 02 FB 01
+					15 01 00 00 00 00 02 38 00  /*Idle Mode Off*/
+				];
+				qcom,mdss-dsi-lp1-command-state = "dsi_hs_mode";
+				qcom,mdss-dsi-nolp-command-state = "dsi_hs_mode";
+
+				qcom,mdss-dsi-hbm-on-command = [
+					15 01 00 00 00 00 02 FF 10
+					15 01 00 00 00 00 02 FB 01
+					15 01 00 00 00 00 02 53 20  /*dimming disable*/
+					15 01 00 00 32 00 02 66 02 /*HBM ON*/
+					15 01 00 00 00 00 02 53 28  /*dimming enable*/
+					15 01 00 00 00 00 02 63 FF
+				];
+				qcom,mdss-dsi-hbm-off-command = [
+					15 01 00 00 00 00 02 FF 10
+					15 01 00 00 00 00 02 FB 01
+					15 01 00 00 00 00 02 53 20  /*dimming disable*/
+					15 01 00 00 32 00 02 66 00 /*HBM OFF*/
+					15 01 00 00 00 00 02 53 28  /*dimming enable*/
+				];
+				qcom,mdss-dsi-hbm-on-command-state = "dsi_hs_mode";
+				qcom,mdss-dsi-hbm-off-command-state = "dsi_hs_mode";
+				qcom,mdss-dsi-data-dimming-on-command = [
+					15 01 00 00 00 00 02 FF 10
+					15 01 00 00 00 00 02 FB 01
+					15 01 00 00 00 00 02 53 28
+					15 01 00 00 00 00 02 FF 21  /*dimming set*/
+					15 01 00 00 00 00 02 FB 01
+					15 01 00 00 00 00 02 57 02
+					15 01 00 00 00 00 02 58 02  /*fixed step*/
+					15 01 00 00 00 00 02 FF 10
+					15 01 00 00 00 00 02 FB 01   /*end dimming set*/
+				];
+				qcom,mdss-dsi-data-dimming-off-command = [
+					15 01 00 00 00 00 02 FF 10
+					15 01 00 00 00 00 02 FB 01
+					15 01 00 00 00 00 02 53 20
+				];
+				qcom,mdss-dsi-data-dimming-on-command-state = "dsi_hs_mode";
+				qcom,mdss-dsi-data-dimming-off-command-state = "dsi_hs_mode";
+				qcom,mdss-dsi-lock-command = [
+					15 01 00 00 00 00 02 F0 55
+					15 01 00 00 00 00 02 F1 AA
+					15 01 00 00 00 00 02 F2 66
+				];
+				qcom,mdss-dsi-unlock-command = [
+					15 01 00 00 00 00 02 F0 AA
+					15 01 00 00 00 00 02 F1 55
+					15 01 00 00 00 00 02 F2 99
+				];
+				qcom,mdss-dsi-lock-command-state = "dsi_hs_mode";
+				qcom,mdss-dsi-unlock-command-state = "dsi_hs_mode";
+			};
+		};
+	};
+};

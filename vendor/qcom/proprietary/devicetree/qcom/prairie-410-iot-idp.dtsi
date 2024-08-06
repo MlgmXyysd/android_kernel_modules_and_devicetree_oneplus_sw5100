@@ -1,0 +1,19 @@
+#include "prairie-iot-idp.dtsi"
+
+/ {
+	model = "Qualcomm Technologies, Inc. QCS410 PM6150 IDP";
+	compatible = "qcom,qcs410-iot", "qcom,qcs410", "qcom,iot";
+};
+
+&pm6150l_tz1 {
+	cooling-maps {
+		/delete-node/trip0_cpu2;
+		/delete-node/trip1_cpu2;
+		/delete-node/trip0_cpu3;
+		/delete-node/trip1_cpu3;
+		/delete-node/trip0_cpu4;
+		/delete-node/trip1_cpu4;
+		/delete-node/trip0_cpu5;
+		/delete-node/trip1_cpu5;
+	};
+};

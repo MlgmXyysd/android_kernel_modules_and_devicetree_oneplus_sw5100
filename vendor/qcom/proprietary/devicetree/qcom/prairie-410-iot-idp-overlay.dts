@@ -1,0 +1,15 @@
+/dts-v1/;
+/plugin/;
+
+#include <dt-bindings/interrupt-controller/arm-gic.h>
+#include <dt-bindings/clock/qcom,camcc-sm6150.h>
+#include "prairie-410-iot-idp.dtsi"
+#include "sm6150-audio-overlay.dtsi"
+
+/ {
+	model = "Internal Audio Codec IDP overlay with QCS410";
+	compatible = "qcom,qcs410-idp", "qcom,qcs410", "qcom,idp";
+	qcom,msm-id = <406 0x0>;
+	qcom,board-id = <34 0>;
+};
+

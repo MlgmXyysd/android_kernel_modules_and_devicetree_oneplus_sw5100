@@ -1,0 +1,159 @@
+#include "sa415m-ttp.dtsi"
+#include "sa415m-v2.dtsi"
+
+&soc {
+	codec_vreg: regulator-codec-tlv320aic3x {
+		compatible = "regulator-fixed";
+		regulator-name = "codec_vreg";
+		startup-delay-us = <100>;
+		gpio = <&tlmm 23 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+	};
+
+	snd_tlv3x: sound-auto {
+		compatible = "qcom,sdx-asoc-snd-auto";
+		qcom,model = "sdx-auto-i2s-snd-card";
+		qcom,prim_mi2s_aux_master = <&prim_master>;
+		qcom,prim_mi2s_aux_slave = <&prim_slave>;
+		qcom,sec_mi2s_aux_master = <&sec_master>;
+		qcom,sec_mi2s_aux_slave = <&sec_slave>;
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&a2b_cdc_sel_default>, <&i2s_mclk_active>;
+
+		asoc-platform = <&pcm0>, <&pcm1>, <&voip>, <&voice>,
+				<&loopback>, <&hostless>, <&afe>, <&routing>,
+				<&pcm_dtmf>, <&host_pcm>, <&compress>;
+		asoc-platform-names = "msm-pcm-dsp.0", "msm-pcm-dsp.1",
+				"msm-voip-dsp", "msm-pcm-voice",
+				"msm-pcm-loopback", "msm-pcm-hostless",
+				"msm-pcm-afe", "msm-pcm-routing",
+				"msm-pcm-dtmf", "msm-voice-host-pcm",
+				"msm-compress-dsp";
+		asoc-cpu = <&dai_pri_auxpcm>, <&mi2s_prim>, <&mi2s_sec>,
+				<&dtmf_tx>,
+				<&rx_capture_tx>, <&rx_playback_rx>,
+				<&tx_capture_tx>, <&tx_playback_rx>,
+				<&afe_pcm_rx>, <&afe_pcm_tx>, <&afe_proxy_rx>,
+				<&afe_proxy_tx>, <&incall_record_rx>,
+				<&incall_record_tx>, <&incall_music_rx>,
+				<&dai_pri_tdm_rx_0>, <&dai_pri_tdm_tx_0>,
+				<&dai_sec_tdm_rx_0>, <&dai_sec_tdm_tx_0>,
+				<&dai_sec_auxpcm>, <&incall_music_dl_rx>;
+		asoc-cpu-names = "msm-dai-q6-auxpcm.1",
+				"msm-dai-q6-mi2s.0", "msm-dai-q6-mi2s.1",
+				"msm-dai-stub-dev.4", "msm-dai-stub-dev.5",
+				"msm-dai-stub-dev.6", "msm-dai-stub-dev.7",
+				"msm-dai-stub-dev.8", "msm-dai-q6-dev.224",
+				"msm-dai-q6-dev.225", "msm-dai-q6-dev.241",
+				"msm-dai-q6-dev.240", "msm-dai-q6-dev.32771",
+				"msm-dai-q6-dev.32772", "msm-dai-q6-dev.32773",
+				"msm-dai-q6-tdm.36864", "msm-dai-q6-tdm.36865",
+				"msm-dai-q6-tdm.36880", "msm-dai-q6-tdm.36881",
+				"msm-dai-q6-auxpcm.2", "msm-dai-q6-dev.32774";
+		asoc-codec = <&tlv320aic3x_codec>, <&stub_codec>;
+		asoc-codec-names = "tlv320aic3x-codec", "msm-stub-codec.1";
+		qcom,msm_audio_ssr_devs = <&audio_apr>, <&q6core>;
+	};
+
+	pps {
+		compatible = "pps-gpio";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_pps>;
+		gpios = <&tlmm 42 GPIO_ACTIVE_HIGH>;
+		status = "okay";
+	};
+};
+
+&wcd934x_cdc {
+	status = "disabled";
+};
+
+&wcd9xxx_intc {
+	status = "disabled";
+};
+
+&wcd_rst_gpio {
+	status = "disabled";
+};
+
+&snd_934x {
+	status = "disabled";
+};
+
+&clock_audio_up {
+	status = "disabled";
+};
+
+&vbus_detect {
+	status = "okay";
+};
+
+&i2c_3 {
+	tlv320aic3x_codec: tlv320aic3x@18 {
+		compatible = "ti,tlv320aic3x";
+		reg = <0x18>;
+		gpio-reset = <&tlmm 86 0>;
+		reset-inverted;
+		AVDD-supply = <&codec_vreg>;
+		IOVDD-supply = <&codec_vreg>;
+	};
+};
+
+&i2c_4 {
+	status = "okay";
+	smi130_gyro@68 {
+		compatible = "smi130_gyro";
+		reg = <0x68>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&sensor_int1_default>;
+		interrupt-parent = <&tlmm>;
+		interrupts = <78 IRQ_TYPE_EDGE_RISING>;
+		smi130_gyro,gpio_irq = <&tlmm 78 IRQ_TYPE_EDGE_RISING>;
+	};
+
+	smi130_acc@18 {
+		compatible = "smi130_acc";
+		reg = <0x18>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&sensor_int2_default>;
+		interrupt-parent = <&tlmm>;
+		interrupts = <79 IRQ_TYPE_EDGE_RISING>;
+	};
+
+	iam20680@69 {
+		compatible = "inven,iam20680";
+		reg = <0x69>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&sensor_int1_default>;
+		interrupt-parent = <&tlmm>;
+		interrupts = <78 IRQ_TYPE_EDGE_RISING>;
+		axis_map_x = <1>;
+		axis_map_y = <0>;
+		axis_map_z = <2>;
+		negate_x = <1>;
+		negate_y = <0>;
+		negate_z = <0>;
+		inven,secondary_type = "none";
+		inven,aux_type = "none";
+		inven,read_only_slave_type = "none";
+	};
+
+	asm330@6b {
+		compatible = "st,asm330lhh";
+		reg = <0x6b>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&sensor_int1_default>, <&sensor_enable_default>;
+		asm330-enable-gpio = <&tlmm 90 0x1>;
+		interrupt-parent = <&tlmm>;
+		interrupts = <78 IRQ_TYPE_EDGE_RISING>;
+		qcom,regulator_check = <0>;
+		st,drdy-int-pin= <2>;
+		qcom,asm330_hrtimer;
+	};
+};
+
+&pcie0 {
+	qcom,no-l1-supported;
+	qcom,no-l1ss-supported;
+};

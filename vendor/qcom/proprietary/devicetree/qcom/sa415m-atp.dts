@@ -1,0 +1,10 @@
+/dts-v1/;
+
+#include "sa415m-atp.dtsi"
+
+/ {
+	model = "Qualcomm Technologies, Inc. SDXPOORWILLS ATP";
+	compatible = "qcom,sa415m-atp",
+		"qcom,sdxpoorwills", "qcom,atp";
+	qcom,board-id = <33 0x0>, <33 0x100>;
+};

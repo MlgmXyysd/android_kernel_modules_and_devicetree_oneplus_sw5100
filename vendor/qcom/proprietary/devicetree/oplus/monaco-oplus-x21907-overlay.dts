@@ -1,0 +1,12 @@
+//From: qcom/monaco-standalone-idp-v1-overlay.dts
+/dts-v1/;
+/plugin/;
+
+#include "monaco-oplus-x21907.dtsi"
+
+/ {
+	model = "Qualcomm Technologies, Inc. Monaco Watch V3.00 overlay";
+	qcom,board-id = <0x010022 0x1>;
+	oplus,project-id = <21907>;
+	oplus,hw-id = <0x01 0x00000000 0xffffffff>;
+};

@@ -1,0 +1,8 @@
+&peripheral2_mem {
+	reg = <0x8fe00000 0x200000>;
+};
+
+&mpss_adsp_mem {
+	reg = <0x86c00000 0x8300000>;
+};
+

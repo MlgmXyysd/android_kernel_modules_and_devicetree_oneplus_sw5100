@@ -1,0 +1,7 @@
+//From: qcom/monaco-standalone-idp-v1.dtsi
+
+
+&pm5100_qbg {
+	qcom,iterm-ma = <35>;
+};
+

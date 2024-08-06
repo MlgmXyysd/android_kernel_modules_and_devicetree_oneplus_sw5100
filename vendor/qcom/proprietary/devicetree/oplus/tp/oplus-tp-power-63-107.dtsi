@@ -1,0 +1,16 @@
+&soc {
+	tp_vdd_1v8: gpio-regulator@63 {
+		compatible = "regulator-fixed";
+		regulator-name = "tp_vdd_1v8";
+		gpio = <&tlmm 63 0>;
+		enable-active-high;
+	};
+
+	tp_vdd_3v0: gpio-regulator@107 {
+		compatible = "regulator-fixed";
+		regulator-name = "tp_vdd_3v0";
+		gpio = <&tlmm 107 0>;
+		enable-active-high;
+	};
+};
+

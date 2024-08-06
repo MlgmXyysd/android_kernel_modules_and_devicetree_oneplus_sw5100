@@ -1,0 +1,118 @@
+//From:
+
+#include "../qcom/monaco-standalone-idp-v1.dtsi"
+#include "audio/monaco-oplus-lpi-overlay.dtsi"
+#include "audio/monaco-oplus-audio-common.dtsi"
+
+
+&oplus_nfc {
+	oplus,nfc_switch;
+	nxp,pn544-reg = <&tlmm 53 0x00>;
+};
+
+&oplus_switch {
+	gpios = <&tlmm 42 0x0>, /*switch_id 0 ui*/
+	<&tlmm 80 0x0>, /*switch_id 1 Motor*/
+	<&tlmm 54 0x0>; /*switch_id 2 NFC*/
+
+	switch_nfc {
+		label = "nfc";
+		index = <2>;
+	};
+};
+
+&osh {
+	status = "okay";
+	compatible = "oplus,sensor-hub";
+
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	//ap-suspend-gpio = <&tlmm 42 0>;
+	dead-gpio = <&tlmm 109 GPIO_ACTIVE_LOW>;
+	oplus,swd {
+		compatible = "oplus,swd";
+		reg = <1>;
+
+		pinctrl-names = "default", "active", "dap_active";
+		pinctrl-0 = <&swd_clk_default &swd_data_default>;
+		pinctrl-1 = <&swd_bus_active>;
+		pinctrl-2 = <&swd_dap_active>;
+		swd_clk-gpio = <&tlmm 28 0x0>;
+		swd_data-gpio = <&tlmm 29 0x0>;
+	};
+};
+
+&tlmm {
+	swd_bus_default {
+		/* SWCLK, SWDIO to High-Z mode */
+		swd_clk_default: swd_clk_default {
+			mux {
+				pins = "gpio28";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio28";
+				input-enable;
+				bias-disable;
+			};
+		};
+
+		swd_data_default: swd_data_default {
+			mux {
+				pins = "gpio29";
+				function = "gpio";
+			};
+			config {
+				pins = "gpio29";
+				input-enable;
+				bias-disable;
+			};
+		};
+	};
+
+	swd_bus_active: swd_bus_active {
+		/* SWCLK, SWDIO to output mode and set to default low level */
+		mux {
+			pins = "gpio28", "gpio29";
+			function = "gpio";
+		};
+		config {
+			pins = "gpio28", "gpio29";
+			output-low;
+			bias-pull-down;
+			drive-strength = <2>; /* 2 MA */
+		};
+	};
+
+	swd_dap_active: swd_dap_active {
+		/* SWCLK, SWDIO to output mode and set to default high level */
+		mux {
+			pins = "gpio28", "gpio29";
+			function = "gpio";
+		};
+		config {
+			pins = "gpio28", "gpio29";
+			output-high;
+			bias-pull-up;
+			drive-strength = <2>; /* 2 MA */
+		};
+	};
+};
+
+&soc {
+    i2c_mcu:i2c_mcu_gpio {
+        #address-cells = <1>;
+        #size-cells = <0>;
+        compatible = "i2c-gpio";
+        gpios = <&tlmm 29 GPIO_ACTIVE_HIGH>,   /* sda */
+               <&tlmm 28 GPIO_ACTIVE_HIGH>;   /* scl */
+        i2c-gpio,delay-us = <2>;        /* ~100 kHz */
+        status = "disabled";
+    };
+
+	oplus,power-notify {
+		compatible = "oplus,power-notify";
+		status = "ok";
+	};
+};

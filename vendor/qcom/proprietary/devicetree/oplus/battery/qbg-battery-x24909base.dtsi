@@ -1,0 +1,16 @@
+&soc {
+	/delete-node/ qcom,battery-data;
+	monaco_batterydata: qcom,battery-data {
+		qcom,batt-id-range-pct = <15>;
+		#include "qbg-battery-profile-circle-500mah.dtsi"
+	};
+};
+
+&soc {
+	qcom,battery-data = <&monaco_batterydata>;
+	qcom,hold-soc-while-full;
+};
+
+&pm5100_qbg {
+	qcom,vbat-cutoff-mv = <3390>;
+};

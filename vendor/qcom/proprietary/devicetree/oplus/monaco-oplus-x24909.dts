@@ -1,0 +1,12 @@
+//From: qcom/monaco-standalone-idp-v1.dts
+/dts-v1/;
+
+#include "monaco-oplus-base.dtsi"
+#include "monaco-oplus-x24909.dtsi"
+
+/ {
+	model = "Qualcomm Technologies, Inc. Monaco Watch V4B01";
+	qcom,board-id = <0x010022 0x1>;
+	oplus,project-id = <24909>;
+	oplus,hw-id = <0x02 0x00000000 0xffffffff>;
+};
